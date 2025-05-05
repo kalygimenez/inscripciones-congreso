@@ -1,0 +1,65 @@
+/* Estilos globales */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f5f5f5;
+    margin: 0;
+    padding: 0;
+    color: #333;
+  }
+  
+  /* Header con fondo bordo */
+  header {
+    background-color: #800020; /* Bordó institucional */
+    padding: 10px;
+    text-align: center;
+  }
+  
+  header img {
+    max-height: 60px;
+  }
+  
+  /* Área de inscripción con fondo naranja */
+  main {
+    background-color: #FFA500; /* Naranja institucional */
+    padding: 20px;
+    text-align: center;
+  }
+  
+  main h1, main p {
+    color: #ffffff;
+  }
+  
+  /* Botones */
+  .botones {
+    margin-top: 20px;
+  }
+  
+  button {
+    padding: 12px 24px;
+    font-size: 16px;
+    border: none;
+    border-radius: 6px;
+    background-color: #003366; /* Azul institucional */
+    color: white;
+    cursor: pointer;
+    margin: 0 10px;
+  }
+  
+  button:hover {
+    background-color: #0055a5;
+  }
+  
+  /* Contenedor del flyer, sobre fondo blanco */
+  .flyer-container {
+    background-color: #ffffff;
+    padding: 20px;
+    text-align: center;
+  }
+  
+  .flyer-container img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  }
+  
