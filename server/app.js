@@ -3,16 +3,24 @@ import express from 'express';
 import axios from 'axios';
 import path from 'path';
 import fs from 'fs';
+import dotenv from 'dotenv';
 import { fileURLToPath } from 'url';
-
-const app = express();
-const port = process.env.PORT || 3001;
 
 // Obtener __dirname en ES Modules
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Servir archivos estáticos y parsear JSON
+// Cargar variables de entorno desde tu testyprodu.env
+dotenv.config({
+  path: path.join(__dirname, '../testyprodu.env'),
+  override: true
+});
+
+const app = express();
+const port = process.env.PORT || 3001;
+const baseUrl = process.env.BASE_URL || `http://localhost:${port}`;
+
+// Servir estáticos y parsear JSON
 app.use(express.static(path.join(__dirname, '../public')));
 app.use(express.json());
 
@@ -21,29 +29,32 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/index.html'));
 });
 
-// Ruta para crear la preferencia y redirigir al checkout
+// Crear preferencia y redirigir al checkout (sin auto_return)
 app.get('/pagos', async (req, res) => {
   try {
+    const preferencePayload = {
+      items: [
+        {
+          title: 'Inscripción Congreso',
+          quantity: 1,
+          currency_id: 'ARS',
+          unit_price: 130000  // $130.000,00
+        }
+      ],
+      back_urls: {
+        success: `${baseUrl}/yapague.html`,
+        failure: `${baseUrl}/yapague.html`,
+        pending: `${baseUrl}/yapague.html`
+      }
+      // auto_return removido para evitar el error en HTTP local
+    };
+
     const mpResponse = await axios.post(
       'https://api.mercadopago.com/checkout/preferences',
-      {
-        items: [
-          {
-            title: 'Inscripción Congreso',
-            quantity: 1,
-            currency_id: 'ARS',
-            unit_price: 130000    // Precio: $130.000,00
-          }
-        ],
-        back_urls: {
-          success: `http://localhost:${port}/yapague.html`,
-          failure: `http://localhost:${port}/yapague.html`,
-          pending: `http://localhost:${port}/yapague.html`
-        }
-      },
+      preferencePayload,
       {
         headers: {
-          Authorization: 'Bearer APP_USR-2411392677568567-083010-eaddba35f792ec5c2d4b3591411b3e98__LD_LC__-59441742',
+          Authorization: `Bearer ${process.env.MP_ACCESS_TOKEN}`,
           'Content-Type': 'application/json'
         }
       }
@@ -57,7 +68,7 @@ app.get('/pagos', async (req, res) => {
   }
 });
 
-// Endpoint para recibir datos del formulario "Ya pagué"
+// Endpoint para recibir datos del formulario “Ya pagué”
 app.post('/api/inscripcion', (req, res) => {
   const nueva = req.body;
   const filePath = path.join(__dirname, '../data/registros.json');
@@ -70,7 +81,7 @@ app.post('/api/inscripcion', (req, res) => {
   res.sendStatus(200);
 });
 
-// Arrancar el servidor
+// Levantar servidor
 app.listen(port, () => {
   console.log(`Servidor corriendo en http://localhost:${port}`);
 });
